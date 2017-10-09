@@ -8,15 +8,15 @@
     android:background="@drawable/authorization">
 
 
-    <EditText android:layout_width="250dp"
+    <EditText android:layout_width="match_parent"
               android:layout_height="50dp"
               android:id="@+id/et_email"
               android:layout_centerHorizontal="true"
-              android:layout_marginTop="145dp"
+              android:layout_marginTop="45dp"
               android:hint="Email"
               android:textColorHint="@color/grey_50"
               android:textSize="30dp"/>
-    <EditText android:layout_width="250dp"
+    <EditText android:layout_width="match_parent"
               android:layout_height="50dp"
               android:layout_centerHorizontal="true"
               android:layout_below="@+id/et_email"
@@ -34,7 +34,8 @@
                 android:layout_height="match_parent"
                 android:text="Регистрация"
                 android:layout_weight="1"
-                android:id="@+id/btn_registration"/>
+                android:id="@+id/btn_registration"
+                android:enabled="false"/>
     </LinearLayout>
 
     <LinearLayout android:layout_width="match_parent"

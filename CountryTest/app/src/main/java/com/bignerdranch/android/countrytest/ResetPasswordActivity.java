@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -57,6 +59,8 @@ public class ResetPasswordActivity extends AppCompatActivity implements View.OnC
 //            Intent intent = new Intent(AuthorizationActivity.this, TestActivity.class);
 //            startActivity(intent);
         }
+
+        checkExistenceEmailPassword();
     }
 
     @Override
@@ -78,6 +82,32 @@ public class ResetPasswordActivity extends AppCompatActivity implements View.OnC
             Intent intent = new Intent(ResetPasswordActivity.this, AuthorizationActivity.class);
             startActivity(intent);
         }
+    }
+
+    // Активируем Авторизацию при заполненных полях
+    public void checkExistenceEmailPassword(){
+
+        ETemail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (ETemail.getText().toString().length() > 0 ) {
+                    findViewById(R.id.btn_reset_password).setEnabled(true);
+                } else {
+                    findViewById(R.id.btn_reset_password).setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
 
 }

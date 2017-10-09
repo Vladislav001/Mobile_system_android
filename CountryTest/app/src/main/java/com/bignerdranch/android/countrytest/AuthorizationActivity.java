@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ public class AuthorizationActivity extends AppCompatActivity implements View.OnC
             }
         };
 
+
         ETemail = (EditText) findViewById(R.id.et_email);
         ETpassword = (EditText) findViewById(R.id.et_password);
 
@@ -54,12 +57,19 @@ public class AuthorizationActivity extends AppCompatActivity implements View.OnC
         findViewById(R.id.href_reset_password).setOnClickListener(this);
         findViewById(R.id.href_registration).setOnClickListener(this);
 
+
+        // Активируем Авторизацию при заполненных полях
+        ETemail.addTextChangedListener(generalTextWatcher);
+        ETpassword.addTextChangedListener(generalTextWatcher);
+
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null) {
 //            Intent intent = new Intent(AuthorizationActivity.this, TestActivity.class);
 //            startActivity(intent);
         }
     }
+
+
 
     @Override
     public void onClick(View view) {
@@ -87,8 +97,8 @@ public class AuthorizationActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
-//                      Intent intent = new Intent(AuthorizationActivity.this, RegistrationActivity.class);
-//                      startActivity(intent);
+                    Intent intent = new Intent(AuthorizationActivity.this, TestActivity.class);
+                    startActivity(intent);
                     Toast.makeText(AuthorizationActivity.this, "Aвторизация успешна", Toast.LENGTH_SHORT).show();
                 }else
                     Toast.makeText(AuthorizationActivity.this, "Aвторизация провалена", Toast.LENGTH_SHORT).show();
@@ -96,5 +106,29 @@ public class AuthorizationActivity extends AppCompatActivity implements View.OnC
             }
         });
     }
+
+    // Активируем Авторизацию при заполненных полях
+    private TextWatcher generalTextWatcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            if (ETemail.getText().toString().length() > 0 &&  ETpassword.getText().toString().length() > 0) {
+                findViewById(R.id.btn_sign_in).setEnabled(true);
+            } else {
+                findViewById(R.id.btn_sign_in).setEnabled(false);
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
 }
