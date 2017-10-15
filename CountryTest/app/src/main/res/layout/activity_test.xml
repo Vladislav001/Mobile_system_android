@@ -54,11 +54,11 @@
         android:animateLayoutChanges="true">
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/question_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="40sp"
-            android:visibility="gone"/>
+            android:textSize="20sp"/>
+          <!-- android:visibility="gone"-->
         <ImageView
             android:id="@+id/vp_test"
             android:layout_width="match_parent"

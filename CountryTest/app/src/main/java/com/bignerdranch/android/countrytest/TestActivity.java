@@ -34,10 +34,12 @@ public class TestActivity extends AppCompatActivity  {
     private ImageView mBTNlefttArrow;
     private ImageView mBTNrightArrow;
     private ImageView mBTNstopTest;
-    private TextView mTVtitle;
+    private TextView mQuestionTextView;
 
     DatabaseReference manageButtons;
     DatabaseReference settings;
+
+    private int mCurrentIndex = 0; // текущий вопрос
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +51,58 @@ public class TestActivity extends AppCompatActivity  {
         mBTNlefttArrow = (ImageView) findViewById(R.id.btn_left_arrow);
         mBTNrightArrow = (ImageView) findViewById(R.id.btn_right_arrow);
         mBTNstopTest = (ImageView) findViewById(R.id.btn_stop);
-        mTVtitle = (TextView) findViewById(R.id.tv_title);
+        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
 
         mStorageRef = FirebaseStorage.getInstance().getReference(); // ссылка на дефолтное Storage
         myRef = FirebaseDatabase.getInstance().getReference(); // ссылка на дефолтную БД
 
-        manageButtons = myRef.child("test/manage_buttons/");
-        settings = myRef.child("test/settings/");
+        manageButtons = myRef.child("test/manage_buttons/"); // ссылка на узел БД управляющих кнопок
+        settings = myRef.child("test/settings/"); // ссылка на узел БД настроек
+
+        // Установка текста вопроса в зависимости от индекста
+        int question = mQuestionBank[mCurrentIndex].getTextResID();
+        mQuestionTextView.setText(question);
+
+        // Ответ верен
+        mBTNtrue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAnswer(true);
+            }
+        });
+
+        // Ответ не верен
+        mBTNfalse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAnswer(false);
+            }
+        });
+
+        // Перейти к следующему вопросу
+        mBTNrightArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentIndex <= mQuestionBank.length - 2) {
+                    mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                    updateQuestion();
+                }
+            }
+        });
+
+        // Перейти к предыдущему вопросу
+        mBTNlefttArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentIndex > 0) {
+                    mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                    updateQuestion();
+                }
+            }
+        });
+
+        // Отображать вопрос
+        updateQuestion();
 
         manageButtons.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -109,8 +156,34 @@ public class TestActivity extends AppCompatActivity  {
             }
         });
 
+    }
 
+    // Хранилище ответов на вопроса - сделать из FB !
+    private Question[] mQuestionBank = new Question[] {
+            new Question(R.string.question_oceans, true),
+            new Question(R.string.question_mideast, false),
+            new Question(R.string.question_africa, false),
+            new Question(R.string.question_americas, true),
+            new Question(R.string.question_asia, true),
+    };
 
+    // Обновлена текста вопроса при пролистывании (вперед - назад)
+    private void updateQuestion() {
+        int question = mQuestionBank[mCurrentIndex].getTextResID();
+        mQuestionTextView.setText(question);
+    }
+
+    // Проверка правильности ответа на вопрос
+    private void checkAnswer(boolean userPressedTrue) {
+        boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        int messageResId = 0;
+        if (userPressedTrue == answerIsTrue) {
+            messageResId = R.string.correct_toast;
+        } else {
+            messageResId = R.string.incorrect_toast;
+        }
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
+                .show();
     }
 
         // Загрузка изображения из FB Storage
@@ -122,5 +195,4 @@ public class TestActivity extends AppCompatActivity  {
     }
 
     // !!! Удаление слушателей наверно еще надо бы для addListenerForSingleValueEvent !!!
-//Toast.makeText(TestActivity.this, "Значение тру и фалсе = " + peopleNumber, Toast.LENGTH_SHORT).show();
 }
