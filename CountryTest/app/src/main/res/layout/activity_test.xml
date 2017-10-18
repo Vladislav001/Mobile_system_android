@@ -60,10 +60,10 @@
             android:textSize="20sp"/>
           <!-- android:visibility="gone"-->
         <ImageView
-            android:id="@+id/vp_test"
+            android:id="@+id/question_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"/>
 
         <!--<com.bignerdranch.android.countrytest.ViewPagerCustomDuration-->
         <!--android:id="@+id/vp_test"-->

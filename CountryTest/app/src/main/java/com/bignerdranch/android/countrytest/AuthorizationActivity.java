@@ -62,10 +62,11 @@ public class AuthorizationActivity extends AppCompatActivity implements View.OnC
         ETemail.addTextChangedListener(generalTextWatcher);
         ETpassword.addTextChangedListener(generalTextWatcher);
 
+        // Если вышли на раб.стол, но авторизованы - зайдем сразу в тест
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null) {
-//            Intent intent = new Intent(AuthorizationActivity.this, TestActivity.class);
-//            startActivity(intent);
+            Intent intent = new Intent(AuthorizationActivity.this, TestActivity.class);
+            startActivity(intent);
         }
     }
 

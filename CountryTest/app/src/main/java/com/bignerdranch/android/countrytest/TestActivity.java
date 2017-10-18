@@ -1,6 +1,7 @@
 package com.bignerdranch.android.countrytest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +31,8 @@ public class TestActivity extends AppCompatActivity  {
 
     private StorageReference mStorageRef;
     private DatabaseReference myRef;
+    private FirebaseAuth mAuth;
+    FirebaseUser user = mAuth.getInstance().getCurrentUser();
 
     private ImageView mBTNtrue;
     private ImageView mBTNfalse;
@@ -35,11 +40,14 @@ public class TestActivity extends AppCompatActivity  {
     private ImageView mBTNrightArrow;
     private ImageView mBTNstopTest;
     private TextView mQuestionTextView;
+    private ImageView mQuestionImageView;
 
     DatabaseReference manageButtons;
     DatabaseReference settings;
 
     private int mCurrentIndex = 0; // текущий вопрос
+    private int mCorrectAnswer = 0; // счетчик правильных ответов
+    int answers = 0; // счетчик ответов
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,7 @@ public class TestActivity extends AppCompatActivity  {
         mBTNrightArrow = (ImageView) findViewById(R.id.btn_right_arrow);
         mBTNstopTest = (ImageView) findViewById(R.id.btn_stop);
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mQuestionImageView = (ImageView) findViewById(R.id.question_image_view);
 
         mStorageRef = FirebaseStorage.getInstance().getReference(); // ссылка на дефолтное Storage
         myRef = FirebaseDatabase.getInstance().getReference(); // ссылка на дефолтную БД
@@ -59,15 +68,24 @@ public class TestActivity extends AppCompatActivity  {
         manageButtons = myRef.child("test/manage_buttons/"); // ссылка на узел БД управляющих кнопок
         settings = myRef.child("test/settings/"); // ссылка на узел БД настроек
 
-        // Установка текста вопроса в зависимости от индекста
+        // Установка текста вопроса в зависимости от индекса
         int question = mQuestionBank[mCurrentIndex].getTextResID();
         mQuestionTextView.setText(question);
+
+        // Установка картинки вопроса в зависимости от индекса
+        int image = mImageBank[mCurrentIndex].getImageResID();
+        mQuestionImageView.setImageResource(image);
 
         // Ответ верен
         mBTNtrue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAnswer(true);
+                if (mCurrentIndex <= mQuestionBank.length - 2) {
+                    mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                    updateQuestion();
+                    updateImage();
+                }
             }
         });
 
@@ -76,6 +94,11 @@ public class TestActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
+                if (mCurrentIndex <= mQuestionBank.length - 2) {
+                    mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                    updateQuestion();
+                    updateImage();
+                }
             }
         });
 
@@ -86,6 +109,7 @@ public class TestActivity extends AppCompatActivity  {
                 if (mCurrentIndex <= mQuestionBank.length - 2) {
                     mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                     updateQuestion();
+                    updateImage();
                 }
             }
         });
@@ -95,14 +119,29 @@ public class TestActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 if (mCurrentIndex > 0) {
+                    answers--;
                     mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
                     updateQuestion();
+                    updateImage();
                 }
             }
         });
 
         // Отображать вопрос
         updateQuestion();
+
+        // Стоп тест - разлогин
+        mBTNstopTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TestActivity.this, AuthorizationActivity.class);
+                startActivity(intent);
+                FirebaseAuth.getInstance().signOut();
+
+            }
+        });
+
+
 
         manageButtons.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -167,10 +206,25 @@ public class TestActivity extends AppCompatActivity  {
             new Question(R.string.question_asia, true),
     };
 
+    // Хранилище картинок на вопросы - сделать из FB !
+    private Image[] mImageBank = new Image[] {
+            new Image(R.drawable.image_1),
+            new Image(R.drawable.image_2),
+            new Image(R.drawable.image_3),
+            new Image(R.drawable.image_4),
+            new Image(R.drawable.image_5),
+    };
+
     // Обновлена текста вопроса при пролистывании (вперед - назад)
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResID();
         mQuestionTextView.setText(question);
+    }
+
+    // Обновлена картинки вопроса при пролистывании (вперед - назад)
+    private void updateImage() {
+        int image = mImageBank[mCurrentIndex].getImageResID();
+        mQuestionImageView.setImageResource(image);
     }
 
     // Проверка правильности ответа на вопрос
@@ -179,11 +233,24 @@ public class TestActivity extends AppCompatActivity  {
         int messageResId = 0;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            // При последнем вопросе переход на рез-ты, т.к можно на одном много правильных набрать
+            if (mCorrectAnswer < mQuestionBank.length) {
+                mCorrectAnswer++;
+                myRef.child("Users").child(user.getUid()).child("results").setValue(mCorrectAnswer);
+            }
         } else {
             messageResId = R.string.incorrect_toast;
         }
+
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                 .show();
+
+        // Переход к результатам
+        answers++;
+        if(answers == mQuestionBank.length) {
+            Intent intent = new Intent(TestActivity.this, ResultsActivity.class);
+            startActivity(intent);
+        }
     }
 
         // Загрузка изображения из FB Storage

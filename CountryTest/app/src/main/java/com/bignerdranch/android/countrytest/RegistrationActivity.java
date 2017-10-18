@@ -87,6 +87,7 @@ public class RegistrationActivity extends AppCompatActivity implements View.OnCl
                 if(task.isSuccessful())
                 {
                     myRef.child("Users").child(user.getUid()).setValue(user);
+                    myRef.child("Users").child(user.getUid()).child("results").setValue(0);
                     Toast.makeText(RegistrationActivity.this, "Регистрация успешна", Toast.LENGTH_SHORT).show();
                 }
                 else
