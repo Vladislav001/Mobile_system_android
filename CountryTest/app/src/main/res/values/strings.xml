@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CountryTest</string>
+    <string name="correct_toast">Correct!</string>
+    <string name="incorrect_toast">Incorrect!</string>
+
+
+    <string name="question_oceans">Тихий океан больше, чем
+Атлантический океан.</string>
+    <string name="question_mideast">Суэцкий канал соединяет Красное море
+и Индийский океан.</string>
+    <string name="question_africa">Источник реки Нил находится в Египте.
+</string>
+    <string name="question_americas">Река Амазонка - самая длинная река
+в Северной и Южной Америке.</string>
+    <string name="question_asia">Озеро Байкал является самым старым и самым глубоким в мире
+пресноводным озеро.</string>
+</resources>
