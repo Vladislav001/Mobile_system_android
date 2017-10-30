@@ -4,14 +4,14 @@
     <string name="incorrect_toast">Incorrect!</string>
 
 
-    <string name="question_oceans">Тихий океан больше, чем
-Атлантический океан.</string>
-    <string name="question_mideast">Суэцкий канал соединяет Красное море
-и Индийский океан.</string>
-    <string name="question_africa">Источник реки Нил находится в Египте.
-</string>
-    <string name="question_americas">Река Амазонка - самая длинная река
-в Северной и Южной Америке.</string>
-    <string name="question_asia">Озеро Байкал является самым старым и самым глубоким в мире
-пресноводным озеро.</string>
+    <string name="question_1">Россия самая большая страна в мире</string>
+    <string name="question_2">Свазиленд самая бедная страна в мире</string>
+    <string name="question_3">Гватемала не принимала участие во Второй Мировой Войне</string>
+    <string name="question_4">Всего существует 193 независимых государства</string>
+    <string name="question_5">На картинке изображен флаг Эквадора</string>
+    <string name="question_6">Столицей Австрии является Штайр</string>
+    <string name="question_7">В США 50 штатов</string>
+    <string name="question_8">В Швейцарии говорят на французском языке</string>
+    <string name="question_9">Индия самое населенное государство на планете</string>
+    <string name="question_10">В Европейском союзе 28 государств</string>
 </resources>

@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="20px"
             android:indeterminate="false"
-            android:max="5"
+            android:max="10"
             android:progress="1"
             android:visibility="invisible"
             android:progressDrawable="@drawable/myprogressbar"/>

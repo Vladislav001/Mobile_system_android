@@ -50,8 +50,9 @@ public class TestActivity extends AppCompatActivity {
     DatabaseReference settings;
 
     private int mCurrentIndex = 0; // текущий вопрос (на webe - плюсуем 1)
-    private int mCorrectAnswer = 0; // счетчик правильных ответов
     int answers = 0; // счетчик ответов
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +130,6 @@ public class TestActivity extends AppCompatActivity {
                         // Получаем значения настроек из FB Database
                         String text_setting = dataSnapshotSetting.child("text").getValue(String.class);
                         String swap_setting = dataSnapshotSetting.child("swap").getValue(String.class);
-                        String swap_arrows_setting = dataSnapshotSetting.child("swap_arrows").getValue(String.class);
-                        String swap_finger_setting = dataSnapshotSetting.child("swap_finger").getValue(String.class);
                         String progress_setting = dataSnapshotSetting.child("progress_bar").getValue(String.class);
 
                         // Получаем значения стилей из FB Database
@@ -191,6 +190,7 @@ public class TestActivity extends AppCompatActivity {
 
                                         updateQuestion();
                                         updateImage();
+
                                     }
                                 }
                             });
@@ -223,11 +223,16 @@ public class TestActivity extends AppCompatActivity {
 
     // Хранилище ответов на вопроса - сделать из FB !
     private Question[] mQuestionBank = new Question[] {
-            new Question(R.string.question_oceans, true),
-            new Question(R.string.question_mideast, false),
-            new Question(R.string.question_africa, false),
-            new Question(R.string.question_americas, true),
-            new Question(R.string.question_asia, true),
+            new Question(R.string.question_1, true),
+            new Question(R.string.question_2, false),
+            new Question(R.string.question_3, false),
+            new Question(R.string.question_4, true),
+            new Question(R.string.question_5, true),
+            new Question(R.string.question_6, false),
+            new Question(R.string.question_7, false),
+            new Question(R.string.question_8, true),
+            new Question(R.string.question_9, false),
+            new Question(R.string.question_10, true),
     };
 
     // Хранилище картинок на вопросы - сделать из FB !
@@ -237,6 +242,11 @@ public class TestActivity extends AppCompatActivity {
             new Image(R.drawable.image_3),
             new Image(R.drawable.image_4),
             new Image(R.drawable.image_5),
+            new Image(R.drawable.image_6),
+            new Image(R.drawable.image_7),
+            new Image(R.drawable.image_8),
+            new Image(R.drawable.image_9),
+            new Image(R.drawable.image_10),
     };
 
     // Обновлена текста вопроса при пролистывании (вперед - назад)
@@ -265,13 +275,16 @@ public class TestActivity extends AppCompatActivity {
         int messageResId = 0;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
-            // При последнем вопросе переход на рез-ты, т.к можно на одном много правильных набрать
-            if (mCorrectAnswer < mQuestionBank.length) {
-                mCorrectAnswer++;
-                myRef.child("Users").child(user.getUid()).child("results").setValue(mCorrectAnswer);
-            }
+
+            // Значение ответа на номер вопроса для ВЕБА
+                myRef.child("Users").child(user.getUid()).child("/test_results").child(String.valueOf(mCurrentIndex))
+                        .child("answer").setValue("Верно");
         } else {
             messageResId = R.string.incorrect_toast;
+
+            // Значение ответа на номер вопроса для ВЕБА
+            myRef.child("Users").child(user.getUid()).child("/test_results").child(String.valueOf(mCurrentIndex))
+                    .child("answer").setValue("Неверно");
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
